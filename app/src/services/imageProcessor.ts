@@ -38,6 +38,23 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 import base64
 
+def apply_orientation(img, orientation):
+    if orientation == 2:
+        return img.transpose(Image.FLIP_LEFT_RIGHT)
+    elif orientation == 3:
+        return img.rotate(180)
+    elif orientation == 4:
+        return img.transpose(Image.FLIP_TOP_BOTTOM)
+    elif orientation == 5:
+        return img.transpose(Image.FLIP_LEFT_RIGHT).rotate(90, expand=True)
+    elif orientation == 6:
+        return img.rotate(270, expand=True)
+    elif orientation == 7:
+        return img.transpose(Image.FLIP_LEFT_RIGHT).rotate(270, expand=True)
+    elif orientation == 8:
+        return img.rotate(90, expand=True)
+    return img
+
 def rgba_to_jpeg(rgba_base64, width, height):
     rgba_bytes = base64.b64decode(rgba_base64)
     img = Image.frombytes("RGBA", (width, height), rgba_bytes)
@@ -46,10 +63,11 @@ def rgba_to_jpeg(rgba_base64, width, height):
     img.save(buffer, format="JPEG", quality=85)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-def add_timestamp(input_base64, date_str):
+def add_timestamp(input_base64, date_str, orientation=1):
     image_bytes = base64.b64decode(input_base64)
     img = Image.open(io.BytesIO(image_bytes))
     img = img.convert("RGBA")
+    img = apply_orientation(img, orientation)
     
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
     
@@ -83,9 +101,10 @@ def add_timestamp(input_base64, date_str):
     result.save(buffer, format="JPEG", quality=95)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-def add_timestamp_from_rgba(rgba_base64, width, height, date_str):
+def add_timestamp_from_rgba(rgba_base64, width, height, date_str, orientation=1):
     rgba_bytes = base64.b64decode(rgba_base64)
     img = Image.frombytes("RGBA", (width, height), rgba_bytes)
+    img = apply_orientation(img, orientation)
     
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
     
@@ -175,15 +194,17 @@ class ImageProcessor {
     )
   }
 
-  private async extractDate(file: File): Promise<string> {
+  private async extractDateAndOrientation(file: File): Promise<{ dateStr: string; orientation: number }> {
     try {
-      const exif = await exifr.parse(file, ['DateTimeOriginal', 'CreateDate', 'ModifyDate'])
+      const exif = await exifr.parse(file, ['DateTimeOriginal', 'CreateDate', 'ModifyDate', 'Orientation'])
       const date = exif?.DateTimeOriginal || exif?.CreateDate || exif?.ModifyDate
+      const orientation = exif?.Orientation || 1
+      
       if (date instanceof Date) {
-        return formatDate(date)
+        return { dateStr: formatDate(date), orientation }
       }
     } catch {
-      // EXIF extraction failed, will throw below
+      // EXIF extraction failed
     }
     throw new Error('No date found in photo metadata')
   }
@@ -222,7 +243,7 @@ class ImageProcessor {
       throw new Error('Processor not initialized')
     }
 
-    const dateStr = await this.extractDate(file)
+    const { dateStr, orientation } = await this.extractDateAndOrientation(file)
 
     if (this.isHeic(file)) {
       const { rgba, width, height } = await this.decodeHeic(file)
@@ -237,9 +258,10 @@ class ImageProcessor {
       this.pyodide.globals.set('img_width', width)
       this.pyodide.globals.set('img_height', height)
       this.pyodide.globals.set('date_str', dateStr)
+      this.pyodide.globals.set('orientation', orientation)
 
       return await this.pyodide.runPythonAsync(
-        'add_timestamp_from_rgba(rgba_data, img_width, img_height, date_str)'
+        'add_timestamp_from_rgba(rgba_data, img_width, img_height, date_str, orientation)'
       )
     }
 
@@ -254,7 +276,8 @@ class ImageProcessor {
 
     this.pyodide.globals.set('input_data', base64Input)
     this.pyodide.globals.set('date_str', dateStr)
-    return await this.pyodide.runPythonAsync('add_timestamp(input_data, date_str)')
+    this.pyodide.globals.set('orientation', orientation)
+    return await this.pyodide.runPythonAsync('add_timestamp(input_data, date_str, orientation)')
   }
 
   async decodeHeicToBase64(file: File): Promise<string> {

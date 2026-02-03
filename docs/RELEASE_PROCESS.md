@@ -96,6 +96,7 @@ To deploy without creating a tag (e.g., hotfix):
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v0.2.2 | 2026-02-03 | iOS download fix, image rotation fix |
 | v0.2.1 | 2026-02-03 | Fix mobile download button |
 | v0.2.0 | 2026-02-03 | EXIF date extraction |
 | v0.1.0 | 2026-02-03 | MVP - Upload, process, download photos |

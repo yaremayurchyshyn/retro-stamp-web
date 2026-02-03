@@ -55,13 +55,33 @@ export function PhotoItem({ photo }: PhotoItemProps) {
     return STATUS_LABELS[photo.status]
   }
 
-  const getDownloadUrl = (): string => {
-    if (!photo.result) return ''
-    return `data:image/jpeg;base64,${photo.result}`
-  }
-
   const getDownloadFilename = (): string => {
     return `stamped_${photo.file.name.replace(/\.[^.]+$/, '')}.jpg`
+  }
+
+  const handleDownload = () => {
+    if (!photo.result) return
+    
+    // Convert base64 to blob for iOS compatibility
+    const byteCharacters = atob(photo.result)
+    const byteNumbers = new Array(byteCharacters.length)
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i)
+    }
+    const byteArray = new Uint8Array(byteNumbers)
+    const blob = new Blob([byteArray], { type: 'image/jpeg' })
+    const blobUrl = URL.createObjectURL(blob)
+    
+    // Create link and click
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = getDownloadFilename()
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    // Cleanup after delay
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
   }
 
   return (
@@ -74,13 +94,9 @@ export function PhotoItem({ photo }: PhotoItemProps) {
       </div>
 
       {photo.status === 'done' && photo.result && (
-        <a 
-          href={getDownloadUrl()} 
-          download={getDownloadFilename()}
-          className={styles.downloadBtn}
-        >
+        <button onClick={handleDownload} className={styles.downloadBtn}>
           Download
-        </a>
+        </button>
       )}
     </div>
   )

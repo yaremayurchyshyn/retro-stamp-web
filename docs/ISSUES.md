@@ -2,10 +2,35 @@
 
 ## ISSUE-001: Download button not working on mobile
 
-**Status**: Fixed in v0.2.1  
+**Status**: Fixed in v0.2.2  
 **Severity**: Critical  
 **Found in**: v0.2.0  
-**Fixed in**: v0.2.1
+**Fixed in**: v0.2.2
+
+### Description
+
+Download button does not trigger file download on iOS browsers (Safari, Chrome).
+
+### Solution
+
+Use Blob URL instead of data URL, append link to DOM before clicking.
+
+---
+
+## ISSUE-002: Image rotated incorrectly on mobile
+
+**Status**: Fixed in v0.2.2  
+**Severity**: Critical  
+**Found in**: v0.2.1  
+**Fixed in**: v0.2.2
+
+### Description
+
+HEIC images appear rotated 90° counter-clockwise after processing.
+
+### Solution
+
+Extract EXIF Orientation tag and apply rotation in Pillow before adding timestamp.
 
 ### Description
 
