@@ -35,6 +35,7 @@
 }
 
 .downloadBtn {
+  display: inline-block;
   padding: 6px 12px;
   background: #FFA032;
   color: #fff;
@@ -42,6 +43,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  text-decoration: none;
 }
 
 .downloadBtn:hover {

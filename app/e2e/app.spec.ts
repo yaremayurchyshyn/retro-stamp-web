@@ -27,7 +27,12 @@ test.describe('RetroStamp', () => {
     
     await page.click('button:has-text("Process All")')
     await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
-    await expect(page.getByRole('button', { name: 'Download', exact: true })).toBeVisible()
+    
+    // Verify download link exists and has correct attributes
+    const downloadLink = page.locator('a:has-text("Download")')
+    await expect(downloadLink).toBeVisible()
+    await expect(downloadLink).toHaveAttribute('download', /^stamped_/)
+    await expect(downloadLink).toHaveAttribute('href', /^data:image\/jpeg;base64,/)
   })
 
   test('shows error for file without EXIF date', async ({ page }) => {

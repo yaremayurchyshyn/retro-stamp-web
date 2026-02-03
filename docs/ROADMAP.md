@@ -37,6 +37,14 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
+### v0.2.1 - Mobile Download Fix
+**Status**: Released  
+**Date**: 2026-02-03
+
+- [x] Fix download button on mobile (ISSUE-001)
+
+---
+
 ### v0.2.0 - EXIF Date
 **Status**: Released  
 **Date**: 2026-02-03

@@ -1,3 +1,7 @@
+.container {
+  display: inline-block;
+}
+
 .button {
   padding: 12px 24px;
   background: #fff;
@@ -11,4 +15,8 @@
 
 .button:hover {
   background: #fff8f0;
+}
+
+.hiddenLinks {
+  display: none;
 }

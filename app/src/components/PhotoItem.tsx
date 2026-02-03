@@ -55,13 +55,13 @@ export function PhotoItem({ photo }: PhotoItemProps) {
     return STATUS_LABELS[photo.status]
   }
 
-  const handleDownload = () => {
-    if (!photo.result) return
-    
-    const link = document.createElement('a')
-    link.href = `data:image/jpeg;base64,${photo.result}`
-    link.download = `stamped_${photo.file.name.replace(/\.[^.]+$/, '')}.jpg`
-    link.click()
+  const getDownloadUrl = (): string => {
+    if (!photo.result) return ''
+    return `data:image/jpeg;base64,${photo.result}`
+  }
+
+  const getDownloadFilename = (): string => {
+    return `stamped_${photo.file.name.replace(/\.[^.]+$/, '')}.jpg`
   }
 
   return (
@@ -73,10 +73,14 @@ export function PhotoItem({ photo }: PhotoItemProps) {
         <p className={styles.status}>{getStatusLabel()}</p>
       </div>
 
-      {photo.status === 'done' && (
-        <button onClick={handleDownload} className={styles.downloadBtn}>
+      {photo.status === 'done' && photo.result && (
+        <a 
+          href={getDownloadUrl()} 
+          download={getDownloadFilename()}
+          className={styles.downloadBtn}
+        >
           Download
-        </button>
+        </a>
       )}
     </div>
   )
