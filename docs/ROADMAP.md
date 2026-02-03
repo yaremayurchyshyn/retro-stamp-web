@@ -31,7 +31,8 @@ RetroStamp - a simple, privacy-first web tool for adding retro timestamps to pho
 **Tracking**: TBD (GitHub Issues or IMPLEMENTATION_PLAN_PHASE2.md)
 
 **Scope**:
-- Use EXIF date instead of current date
+- Use EXIF date instead of current date (currently shows wrong date)
+- Per-photo process button (currently only "Process All")
 - Preview before/after comparison
 - ZIP download for batch
 - i18n: English + Ukrainian (Ukrainian for ru locale)

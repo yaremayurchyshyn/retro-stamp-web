@@ -1,0 +1,49 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.filename {
+  margin: 0;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.downloadBtn {
+  padding: 6px 12px;
+  background: #FFA032;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.downloadBtn:hover {
+  background: #e8912d;
+}

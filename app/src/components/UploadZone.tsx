@@ -1,0 +1,59 @@
+import { useState, useRef } from 'react'
+import type { DragEvent, ChangeEvent } from 'react'
+import { useAppStore } from '../store/useAppStore'
+import { SUPPORTED_FORMATS } from '../constants'
+import styles from './UploadZone.module.css'
+
+export function UploadZone() {
+  const [isDragOver, setIsDragOver] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const addPhotos = useAppStore((s) => s.addPhotos)
+
+  const filterValidFiles = (files: FileList | null): File[] => {
+    if (!files) return []
+    return Array.from(files).filter((file) => SUPPORTED_FORMATS.pattern.test(file.name))
+  }
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = () => setIsDragOver(false)
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    const validFiles = filterValidFiles(e.dataTransfer.files)
+    if (validFiles.length) addPhotos(validFiles)
+  }
+
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const validFiles = filterValidFiles(e.target.files)
+    if (validFiles.length) addPhotos(validFiles)
+  }
+
+  const openFilePicker = () => inputRef.current?.click()
+
+  return (
+    <div
+      className={`${styles.zone} ${isDragOver ? styles.dragOver : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onClick={openFilePicker}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept={SUPPORTED_FORMATS.accept}
+        multiple
+        onChange={handleFileSelect}
+        className={styles.hiddenInput}
+      />
+      <div className={styles.icon}>📷</div>
+      <p className={styles.text}>Drop photos here or click to select</p>
+      <p className={styles.hint}>{SUPPORTED_FORMATS.label}</p>
+    </div>
+  )
+}
