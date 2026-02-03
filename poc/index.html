@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>retro-stamp POC - Pyodide + HEIC</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        #status { padding: 10px; margin: 10px 0; background: #f0f0f0; }
+        #output { margin-top: 20px; }
+        #output img { max-width: 100%; border: 1px solid #ccc; }
+        button { padding: 10px 20px; font-size: 16px; }
+        .timing { color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>retro-stamp POC</h1>
+    <p>Testing Pyodide + Pillow + HEIC (libheif-js 1.19.8)</p>
+    
+    <div id="status">Loading...</div>
+    
+    <div id="controls" style="display:none;">
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/heic,image/heif,.heic,.HEIC">
+        <button onclick="processImage()">Add Timestamp</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script type="module">
+        import libheifFactory from 'https://cdn.jsdelivr.net/npm/libheif-js@1.19.8/libheif-wasm/libheif-bundle.mjs';
+        const libheif = await libheifFactory();
+        
+        let pyodide = null;
+        const status = document.getElementById('status');
+        const controls = document.getElementById('controls');
+        const output = document.getElementById('output');
+        
+        const pythonCode = `
+from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime
+import io
+import base64
+
+def add_timestamp(input_base64):
+    image_bytes = base64.b64decode(input_base64)
+    img = Image.open(io.BytesIO(image_bytes))
+    img = img.convert("RGBA")
+    
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    
+    text = datetime.now().strftime("%d.%m.%Y")
+    color = (255, 160, 50, 200)
+    font = ImageFont.load_default()
+    
+    bbox = font.getbbox(text)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    
+    target_height = int(min(img.width, img.height) * 0.04)
+    scale = target_height / text_height if text_height > 0 else 1
+    
+    margin = int(min(img.width, img.height) * 0.03)
+    x = img.width - int(text_width * scale) - margin
+    y = img.height - int(text_height * scale) - margin
+    
+    txt_img = Image.new("RGBA", (text_width + 2, text_height + 2), (0, 0, 0, 0))
+    txt_draw = ImageDraw.Draw(txt_img)
+    txt_draw.text((0, 0), text, font=font, fill=color)
+    
+    scaled_size = (int(txt_img.width * scale), int(txt_img.height * scale))
+    txt_img = txt_img.resize(scaled_size, Image.BILINEAR)
+    
+    overlay.paste(txt_img, (x, y), txt_img)
+    
+    result = Image.alpha_composite(img, overlay)
+    result = result.convert("RGB")
+    
+    buffer = io.BytesIO()
+    result.save(buffer, format="JPEG", quality=95)
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+def add_timestamp_from_rgba(rgba_base64, width, height):
+    rgba_bytes = base64.b64decode(rgba_base64)
+    img = Image.frombytes("RGBA", (width, height), rgba_bytes)
+    
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    
+    text = datetime.now().strftime("%d.%m.%Y")
+    color = (255, 160, 50, 200)
+    font = ImageFont.load_default()
+    
+    bbox = font.getbbox(text)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    
+    target_height = int(min(img.width, img.height) * 0.04)
+    scale = target_height / text_height if text_height > 0 else 1
+    
+    margin = int(min(img.width, img.height) * 0.03)
+    x = img.width - int(text_width * scale) - margin
+    y = img.height - int(text_height * scale) - margin
+    
+    txt_img = Image.new("RGBA", (text_width + 2, text_height + 2), (0, 0, 0, 0))
+    txt_draw = ImageDraw.Draw(txt_img)
+    txt_draw.text((0, 0), text, font=font, fill=color)
+    
+    scaled_size = (int(txt_img.width * scale), int(txt_img.height * scale))
+    txt_img = txt_img.resize(scaled_size, Image.BILINEAR)
+    
+    overlay.paste(txt_img, (x, y), txt_img)
+    
+    result = Image.alpha_composite(img, overlay)
+    result = result.convert("RGB")
+    
+    buffer = io.BytesIO()
+    result.save(buffer, format="JPEG", quality=95)
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+`;
+        
+        async function initAll() {
+            const startTime = performance.now();
+            
+            status.textContent = 'Loading HEIC decoder (libheif 1.19)...';
+            console.log('libheif loaded:', libheif);
+            
+            status.textContent = 'Loading Pyodide...';
+            const pyodideModule = await import('https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.mjs');
+            pyodide = await pyodideModule.loadPyodide();
+            
+            status.textContent = 'Installing Pillow...';
+            await pyodide.loadPackage('pillow');
+            
+            await pyodide.runPythonAsync(pythonCode);
+            
+            const loadTime = ((performance.now() - startTime) / 1000).toFixed(1);
+            status.innerHTML = 'Ready! <span class="timing">(loaded in ' + loadTime + 's)</span>';
+            controls.style.display = 'block';
+        }
+        
+        window.processImage = async function() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Please select an image');
+                return;
+            }
+            
+            let file = fileInput.files[0];
+            const fileName = file.name;
+            console.log('File:', fileName, file.type, file.size);
+            status.textContent = 'Processing...';
+            
+            const startTime = performance.now();
+            
+            try {
+                const isHeic = fileName.toLowerCase().endsWith('.heic') || 
+                               fileName.toLowerCase().endsWith('.heif') ||
+                               file.type === 'image/heic' || 
+                               file.type === 'image/heif';
+                
+                let base64Result;
+                
+                if (isHeic) {
+                    status.textContent = 'Decoding HEIC with libheif 1.19...';
+                    console.log('Decoding HEIC...');
+                    
+                    const arrayBuffer = await file.arrayBuffer();
+                    const decoder = new libheif.HeifDecoder();
+                    const data = decoder.decode(new Uint8Array(arrayBuffer));
+                    
+                    if (!data || data.length === 0) {
+                        throw new Error('HEIC decode failed - no images found');
+                    }
+                    
+                    const image = data[0];
+                    const width = image.get_width();
+                    const height = image.get_height();
+                    console.log('Decoded:', width, 'x', height);
+                    
+                    // Get RGBA data via promise
+                    const rgba = await new Promise((resolve, reject) => {
+                        const buffer = new Uint8Array(width * height * 4);
+                        image.display({ data: buffer, width, height }, (displayData) => {
+                            if (!displayData) {
+                                reject(new Error('Failed to get image data'));
+                            } else {
+                                resolve(displayData.data);
+                            }
+                        });
+                    });
+                    
+                    // Convert to base64
+                    let binary = '';
+                    for (let i = 0; i < rgba.length; i++) {
+                        binary += String.fromCharCode(rgba[i]);
+                    }
+                    const rgbaBase64 = btoa(binary);
+                    
+                    status.textContent = 'Adding timestamp...';
+                    pyodide.globals.set('rgba_data', rgbaBase64);
+                    pyodide.globals.set('img_width', width);
+                    pyodide.globals.set('img_height', height);
+                    base64Result = await pyodide.runPythonAsync(
+                        'add_timestamp_from_rgba(rgba_data, img_width, img_height)'
+                    );
+                } else {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const uint8Array = new Uint8Array(arrayBuffer);
+                    
+                    let binary = '';
+                    for (let i = 0; i < uint8Array.length; i++) {
+                        binary += String.fromCharCode(uint8Array[i]);
+                    }
+                    const base64Input = btoa(binary);
+                    
+                    status.textContent = 'Adding timestamp...';
+                    pyodide.globals.set('input_data', base64Input);
+                    base64Result = await pyodide.runPythonAsync('add_timestamp(input_data)');
+                }
+                
+                const processTime = ((performance.now() - startTime) / 1000).toFixed(2);
+                status.innerHTML = 'Done! <span class="timing">(processed in ' + processTime + 's)</span>';
+                
+                const imgTag = '<img src="data:image/jpeg;base64,' + base64Result + '" alt="Stamped image">';
+                const downloadLink = '<a href="data:image/jpeg;base64,' + base64Result + '" download="stamped_' + fileName + '.jpg">Download</a>';
+                output.innerHTML = '<h3>Result:</h3>' + imgTag + '<br><br>' + downloadLink;
+            } catch (err) {
+                status.textContent = 'Error: ' + err.message;
+                console.error(err);
+            }
+        };
+        
+        initAll().catch(function(err) {
+            status.textContent = 'Error: ' + err.message;
+            console.error(err);
+        });
+    </script>
+</body>
+</html>
