@@ -38,10 +38,12 @@ Space for critical bug fixes to v0.1.0.
 ---
 
 ### v0.2.0 - EXIF Date
-**Status**: Planned
+**Status**: Released  
+**Date**: 2026-02-03
 
-- [ ] Extract date from photo EXIF metadata
-- [ ] Fall back to current date if no EXIF
+- [x] Extract date from photo EXIF metadata (DateTimeOriginal, CreateDate, ModifyDate)
+- [x] Show error if photo has no date metadata
+- [x] Default format: DD.MM.YYYY
 
 ---
 

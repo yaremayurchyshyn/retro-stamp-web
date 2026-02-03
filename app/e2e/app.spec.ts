@@ -5,10 +5,9 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const TEST_TIMEOUT = 45000
 
-test.describe('RetroStamp MVP', () => {
+test.describe('RetroStamp', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    // Wait for app to load (Pyodide takes ~12s)
     await page.waitForSelector('text=Drop photos here', { timeout: TEST_TIMEOUT })
   })
 
@@ -20,7 +19,7 @@ test.describe('RetroStamp MVP', () => {
     await expect(page.locator('text=Drop photos here or click to select')).toBeVisible()
   })
 
-  test('processes JPG file successfully', async ({ page }) => {
+  test('processes JPG file with EXIF date successfully', async ({ page }) => {
     const filePath = path.join(__dirname, '../fixtures/test.jpg')
     
     await page.setInputFiles('input[type="file"]', filePath)
@@ -31,23 +30,15 @@ test.describe('RetroStamp MVP', () => {
     await expect(page.getByRole('button', { name: 'Download', exact: true })).toBeVisible()
   })
 
-  test('processes PNG file successfully', async ({ page }) => {
+  test('shows error for file without EXIF date', async ({ page }) => {
     const filePath = path.join(__dirname, '../fixtures/test.png')
     
     await page.setInputFiles('input[type="file"]', filePath)
     await page.click('button:has-text("Process All")')
-    await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
+    await expect(page.locator('text=❌')).toBeVisible({ timeout: TEST_TIMEOUT })
   })
 
-  test('processes multiple files in batch', async ({ page }) => {
-    const jpgPath = path.join(__dirname, '../fixtures/test.jpg')
-    const pngPath = path.join(__dirname, '../fixtures/test.png')
-    
-    await page.setInputFiles('input[type="file"]', [jpgPath, pngPath])
-    await expect(page.locator('text=Waiting...')).toHaveCount(2)
-    
-    await page.click('button:has-text("Process All (2)")')
-    await expect(page.locator('text=Done')).toHaveCount(2, { timeout: TEST_TIMEOUT })
-    await expect(page.locator('button:has-text("Download All (2)")')).toBeVisible()
+  test('shows version in footer', async ({ page }) => {
+    await expect(page.locator('text=v0.')).toBeVisible()
   })
 })

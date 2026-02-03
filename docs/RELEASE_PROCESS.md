@@ -96,4 +96,5 @@ To deploy without creating a tag (e.g., hotfix):
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v0.2.0 | 2026-02-03 | EXIF date extraction |
 | v0.1.0 | 2026-02-03 | MVP - Upload, process, download photos |

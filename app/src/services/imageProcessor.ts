@@ -1,3 +1,5 @@
+import exifr from 'exifr'
+
 declare global {
   interface Window {
     loadPyodide: () => Promise<PyodideInterface>
@@ -29,9 +31,10 @@ interface LibHeif {
   HeifDecoder: new () => HeifDecoder
 }
 
+// Default date format: DD.MM.YYYY
+
 const PYTHON_CODE = `
 from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime
 import io
 import base64
 
@@ -43,18 +46,17 @@ def rgba_to_jpeg(rgba_base64, width, height):
     img.save(buffer, format="JPEG", quality=85)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-def add_timestamp(input_base64):
+def add_timestamp(input_base64, date_str):
     image_bytes = base64.b64decode(input_base64)
     img = Image.open(io.BytesIO(image_bytes))
     img = img.convert("RGBA")
     
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
     
-    text = datetime.now().strftime("%d.%m.%Y")
     color = (255, 160, 50, 200)
     font = ImageFont.load_default()
     
-    bbox = font.getbbox(text)
+    bbox = font.getbbox(date_str)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
     
@@ -67,7 +69,7 @@ def add_timestamp(input_base64):
     
     txt_img = Image.new("RGBA", (text_width + 2, text_height + 2), (0, 0, 0, 0))
     txt_draw = ImageDraw.Draw(txt_img)
-    txt_draw.text((0, 0), text, font=font, fill=color)
+    txt_draw.text((0, 0), date_str, font=font, fill=color)
     
     scaled_size = (int(txt_img.width * scale), int(txt_img.height * scale))
     txt_img = txt_img.resize(scaled_size, Image.BILINEAR)
@@ -81,17 +83,16 @@ def add_timestamp(input_base64):
     result.save(buffer, format="JPEG", quality=95)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-def add_timestamp_from_rgba(rgba_base64, width, height):
+def add_timestamp_from_rgba(rgba_base64, width, height, date_str):
     rgba_bytes = base64.b64decode(rgba_base64)
     img = Image.frombytes("RGBA", (width, height), rgba_bytes)
     
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
     
-    text = datetime.now().strftime("%d.%m.%Y")
     color = (255, 160, 50, 200)
     font = ImageFont.load_default()
     
-    bbox = font.getbbox(text)
+    bbox = font.getbbox(date_str)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
     
@@ -104,7 +105,7 @@ def add_timestamp_from_rgba(rgba_base64, width, height):
     
     txt_img = Image.new("RGBA", (text_width + 2, text_height + 2), (0, 0, 0, 0))
     txt_draw = ImageDraw.Draw(txt_img)
-    txt_draw.text((0, 0), text, font=font, fill=color)
+    txt_draw.text((0, 0), date_str, font=font, fill=color)
     
     scaled_size = (int(txt_img.width * scale), int(txt_img.height * scale))
     txt_img = txt_img.resize(scaled_size, Image.BILINEAR)
@@ -127,6 +128,13 @@ async function loadModule(url: string): Promise<unknown> {
 }
 
 const BYTES_PER_PIXEL = 4
+
+function formatDate(date: Date): string {
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  return `${day}.${month}.${year}`
+}
 
 class ImageProcessor {
   private pyodide: PyodideInterface | null = null
@@ -167,6 +175,19 @@ class ImageProcessor {
     )
   }
 
+  private async extractDate(file: File): Promise<string> {
+    try {
+      const exif = await exifr.parse(file, ['DateTimeOriginal', 'CreateDate', 'ModifyDate'])
+      const date = exif?.DateTimeOriginal || exif?.CreateDate || exif?.ModifyDate
+      if (date instanceof Date) {
+        return formatDate(date)
+      }
+    } catch {
+      // EXIF extraction failed, will throw below
+    }
+    throw new Error('No date found in photo metadata')
+  }
+
   private async decodeHeic(file: File): Promise<{ rgba: Uint8Array; width: number; height: number }> {
     if (!this.libheif) throw new Error('libheif not initialized')
     
@@ -201,6 +222,8 @@ class ImageProcessor {
       throw new Error('Processor not initialized')
     }
 
+    const dateStr = await this.extractDate(file)
+
     if (this.isHeic(file)) {
       const { rgba, width, height } = await this.decodeHeic(file)
 
@@ -213,9 +236,10 @@ class ImageProcessor {
       this.pyodide.globals.set('rgba_data', rgbaBase64)
       this.pyodide.globals.set('img_width', width)
       this.pyodide.globals.set('img_height', height)
+      this.pyodide.globals.set('date_str', dateStr)
 
       return await this.pyodide.runPythonAsync(
-        'add_timestamp_from_rgba(rgba_data, img_width, img_height)'
+        'add_timestamp_from_rgba(rgba_data, img_width, img_height, date_str)'
       )
     }
 
@@ -229,7 +253,8 @@ class ImageProcessor {
     const base64Input = btoa(binary)
 
     this.pyodide.globals.set('input_data', base64Input)
-    return await this.pyodide.runPythonAsync('add_timestamp(input_data)')
+    this.pyodide.globals.set('date_str', dateStr)
+    return await this.pyodide.runPythonAsync('add_timestamp(input_data, date_str)')
   }
 
   async decodeHeicToBase64(file: File): Promise<string> {
