@@ -258,7 +258,7 @@ class ImageProcessor {
       this.pyodide.globals.set('img_width', width)
       this.pyodide.globals.set('img_height', height)
       this.pyodide.globals.set('date_str', dateStr)
-      this.pyodide.globals.set('orientation', orientation)
+      this.pyodide.globals.set('orientation', 1) // libheif already applies orientation
 
       return await this.pyodide.runPythonAsync(
         'add_timestamp_from_rgba(rgba_data, img_width, img_height, date_str, orientation)'

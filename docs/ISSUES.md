@@ -19,18 +19,23 @@ Use Blob URL instead of data URL, append link to DOM before clicking.
 
 ## ISSUE-002: Image rotated incorrectly on mobile
 
-**Status**: Fixed in v0.2.2  
+**Status**: Fixed in v0.2.3  
 **Severity**: Critical  
 **Found in**: v0.2.1  
-**Fixed in**: v0.2.2
+**Fixed in**: v0.2.3
 
 ### Description
 
 HEIC images appear rotated 90° counter-clockwise after processing.
 
+### Root Cause
+
+libheif already applies EXIF orientation during decode. v0.2.2 applied it again, causing double rotation.
+
 ### Solution
 
-Extract EXIF Orientation tag and apply rotation in Pillow before adding timestamp.
+For HEIC: Skip orientation (libheif handles it).
+For JPEG: Apply orientation (Pillow doesn't auto-apply).
 
 ### Description
 

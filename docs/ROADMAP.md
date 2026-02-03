@@ -50,7 +50,15 @@ Space for critical bug fixes to v0.1.0.
 **Date**: 2026-02-03
 
 - [x] Fix download on iOS using Blob URL (ISSUE-001)
-- [x] Fix image rotation using EXIF orientation (ISSUE-002)
+- [x] Fix image rotation using EXIF orientation (ISSUE-002) - partial, caused double rotation for HEIC
+
+---
+
+### v0.2.3 - HEIC Rotation Fix
+**Status**: Released  
+**Date**: 2026-02-03
+
+- [x] Fix HEIC double rotation - libheif already applies orientation (ISSUE-002)
 
 ---
 
