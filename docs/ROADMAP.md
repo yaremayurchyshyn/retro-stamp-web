@@ -6,73 +6,106 @@ RetroStamp - a simple, privacy-first web tool for adding retro timestamps to pho
 
 ---
 
-## Phase 1: MVP ← CURRENT
+## Versioning
 
-**Status**: In Progress  
-**Tracking**: [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)
-
-**Scope**:
-- Single-page React app
-- Upload multiple photos (drag & drop)
-- Fixed timestamp style (orange, bottom-right, DD.MM.YYYY)
-- Support JPEG, PNG, HEIC
-- Download individual + all
-- Privacy banner
-- Progress indicators
-- Deploy to GitHub Pages
-
-**Success**: Users can stamp their iPhone photos without technical knowledge.
+We use [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
+- **MAJOR**: Breaking changes
+- **MINOR**: New features
+- **PATCH**: Bug fixes
 
 ---
 
-## Phase 2: Polish
+## Releases
 
-**Status**: Not Started  
-**Tracking**: TBD (GitHub Issues or IMPLEMENTATION_PLAN_PHASE2.md)
+### v0.1.0 - MVP ✅
+**Status**: Released  
+**Date**: 2026-02-03
 
-**Scope**:
-- Use EXIF date instead of current date (currently shows wrong date)
-- Per-photo process button (currently only "Process All")
-- Preview before/after comparison
-- ZIP download for batch
-- i18n: English + Ukrainian (Ukrainian for ru locale)
-- Improved error messages
-- Better mobile UX
+- [x] Upload photos (JPEG, PNG, HEIC, WEBP)
+- [x] Add date stamp (current date)
+- [x] Batch processing
+- [x] Download individual + all
+- [x] Privacy banner
+- [x] 100% client-side
 
 ---
 
-## Phase 3: Customization
+### v0.1.x - Reserved for bug fixes
+**Status**: Reserved
 
-**Status**: Not Started
+Space for critical bug fixes to v0.1.0.
 
-**Scope**:
-- Date format options (DD.MM.YYYY, MM/DD/YYYY, YYYY-MM-DD)
+---
+
+### v0.2.0 - EXIF Date
+**Status**: Planned
+
+- [ ] Extract date from photo EXIF metadata
+- [ ] Fall back to current date if no EXIF
+
+---
+
+### v0.3.0 - Per-photo Controls
+**Status**: Planned
+
+- [ ] Process button per photo
+- [ ] Remove photo from list
+
+---
+
+### v0.4.0 - Internationalization
+**Status**: Planned
+
+- [ ] i18n setup
+- [ ] English language
+- [ ] Ukrainian language
+- [ ] Auto-detect browser language
+- [ ] Ukrainian for Russian locale
+
+---
+
+### v0.5.0 - ZIP Download
+**Status**: Planned
+
+- [ ] Download all as ZIP file
+
+---
+
+### v0.6.0 - Preview
+**Status**: Planned
+
+- [ ] Before/after comparison view
+
+---
+
+### v1.0.0 - Stable
+**Status**: Planned
+
+- [ ] All Phase 2 features complete
+- [ ] Mobile UX polished
+- [ ] Performance optimized
+
+---
+
+## Future Ideas (Backlog)
+
+Not scheduled yet:
+- Date format options
 - Position options (4 corners)
 - Color picker
 - Font size adjustment
-- Opacity control
-- Per-photo settings
-
----
-
-## Phase 4: Advanced
-
-**Status**: Not Started
-
-**Scope**:
-- Google Analytics integration
-- Preset styles (vintage, modern, minimal)
+- Preset styles
+- Google Analytics
 - Remember preferences (localStorage)
 - Web Worker for non-blocking processing
-- Service Worker for offline support
 
 ---
 
 ## Non-Goals
 
-Explicitly out of scope forever:
-- User accounts / authentication
+Explicitly out of scope:
+- User accounts
 - Server-side processing
-- Cloud storage integration
+- Cloud storage
 - Social sharing
-- Monetization / ads
+- Monetization

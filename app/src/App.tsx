@@ -7,6 +7,7 @@ import { UploadZone } from './components/UploadZone'
 import { PhotoList } from './components/PhotoList'
 import { ProcessButton } from './components/ProcessButton'
 import { DownloadAllButton } from './components/DownloadAllButton'
+import { Footer } from './components/Footer'
 import './index.css'
 
 function App() {
@@ -44,6 +45,8 @@ function App() {
         
         <PhotoList />
       </main>
+      
+      <Footer />
     </>
   )
 }

@@ -2,8 +2,14 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to deploy (e.g., v0.1.0). Leave empty for latest main.'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -19,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
       
       - uses: actions/setup-node@v4
         with:
