@@ -15,6 +15,7 @@ export function PhotoItem({ photo }: PhotoItemProps) {
   const [showPreview, setShowPreview] = useState(false)
   const setPhotoDate = useAppStore((s) => s.setPhotoDate)
   const setPhotoStatus = useAppStore((s) => s.setPhotoStatus)
+  const removePhoto = useAppStore((s) => s.removePhoto)
   const t = useLocale((s) => s.t)
 
   useEffect(() => {
@@ -151,6 +152,14 @@ export function PhotoItem({ photo }: PhotoItemProps) {
             {t.download}
           </button>
         )}
+
+        <button
+          onClick={() => removePhoto(photo.id)}
+          className={styles.removeBtn}
+          disabled={photo.status === 'processing'}
+        >
+          ✕
+        </button>
       </div>
 
       {showPreview && (

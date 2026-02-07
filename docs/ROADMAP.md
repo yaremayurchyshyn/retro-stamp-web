@@ -104,22 +104,29 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.5.0 - Per-photo Controls
-**Status**: Planned
+### v0.5.0 - Remove Photo
+**Status**: Released  
+**Date**: 2026-02-07
 
-- [ ] Process button per photo
-- [ ] Remove photo from list
+- [x] Remove photo from list button
 
 ---
 
-### v0.6.0 - ZIP Download
+### v0.6.0 - Per-photo Controls
+**Status**: Planned
+
+- [ ] Process button per photo
+
+---
+
+### v0.7.0 - ZIP Download
 **Status**: Planned
 
 - [ ] Download all as ZIP file
 
 ---
 
-### v0.7.0 - Preview
+### v0.8.0 - Preview
 **Status**: Planned
 
 - [ ] Before/after comparison view

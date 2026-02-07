@@ -86,6 +86,27 @@
   background: #e8912d;
 }
 
+.removeBtn {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #999;
+}
+
+.removeBtn:hover {
+  background: #fee;
+  border-color: #fcc;
+  color: #c00;
+}
+
+.removeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .overlay {
   position: fixed;
   top: 0;
