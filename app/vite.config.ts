@@ -8,6 +8,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
+        id: '/retro-stamp-web/',
         name: 'RetroStamp',
         short_name: 'RetroStamp',
         description: 'Add retro date stamps to your photos',
