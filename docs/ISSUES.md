@@ -103,3 +103,54 @@ Use `window.open()` with blob URL or trigger download via `<a>` element that use
 
 - `src/components/PhotoItem.tsx`
 - `src/components/DownloadAllButton.tsx`
+
+
+---
+
+# Technical Debt
+
+## TD-001: Python code as string literal
+**Priority**: High  
+**File**: pythonCode.ts (104 lines)
+
+Python code stored as template string. No syntax highlighting, linting, or IDE support. Duplicated timestamp logic.
+
+---
+
+## TD-002: PhotoItem component doing too much
+**Priority**: High  
+**File**: PhotoItem.tsx (165 lines)
+
+Handles thumbnail, date extraction, download, preview modal, and UI. Should split into smaller components.
+
+---
+
+## TD-003: Manual base64 conversion in download handler
+**Priority**: Medium  
+**File**: PhotoItem.tsx
+
+Manual atob() and byte array conversion. DOM manipulation for download. Should extract to utility.
+
+---
+
+## TD-004: Magic numbers in Python code
+**Priority**: Low  
+**File**: pythonCode.ts
+
+Hardcoded values: max_size=200, quality=70, quality=95. Should extract to constants.
+
+---
+
+## TD-005: CSS hardcoded values
+**Priority**: Low  
+**File**: PhotoItem.module.css (128 lines)
+
+Repeated values (60px, 12px, 8px). Should use CSS custom properties.
+
+---
+
+## TD-006: Zustand store lacks computed selectors
+**Priority**: Low  
+**File**: useAppStore.ts
+
+No memoized selectors for derived state. Components recalculate independently.
