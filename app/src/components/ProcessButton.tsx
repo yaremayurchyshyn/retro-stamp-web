@@ -28,8 +28,6 @@ export function ProcessButton() {
         setPhotoStatus(photo.id, 'done', result)
         const format = photo.file.name.split('.').pop()?.toLowerCase()
         analytics.track('photo_processed', { format })
-        // Allow garbage collection between photos
-        await new Promise((r) => setTimeout(r, 100))
       } catch (error) {
         setPhotoStatus(photo.id, 'error', undefined, 'Processing failed. Please try again.')
         analytics.trackError(error as Error, { context: 'process', file: photo.file.name })
