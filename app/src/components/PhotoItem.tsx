@@ -19,32 +19,25 @@ export function PhotoItem({ photo }: PhotoItemProps) {
   const t = useLocale((s) => s.t)
 
   useEffect(() => {
-    let revoke: (() => void) | null = null
+    let cancelled = false
 
     const loadThumbnailAndDate = async () => {
-      const isHeic = /\.(heic|heif)$/i.test(photo.file.name)
-      
-      if (isHeic) {
-        try {
-          const base64 = await imageProcessor.decodeHeicToBase64(photo.file)
-          setThumbnailUrl(`data:image/jpeg;base64,${base64}`)
-        } catch {
-          setThumbnailUrl('')
-        }
-      } else {
-        const url = URL.createObjectURL(photo.file)
-        setThumbnailUrl(url)
-        revoke = () => URL.revokeObjectURL(url)
+      try {
+        const thumbnailUrl = await imageProcessor.generateThumbnail(photo.file)
+        if (!cancelled) setThumbnailUrl(thumbnailUrl)
+      } catch {
+        if (!cancelled) setThumbnailUrl('')
       }
 
       const dateStr = await imageProcessor.extractDate(photo.file)
-      setPhotoDate(photo.id, dateStr)
-
-      setIsLoading(false)
+      if (!cancelled) {
+        setPhotoDate(photo.id, dateStr)
+        setIsLoading(false)
+      }
     }
 
     loadThumbnailAndDate()
-    return () => revoke?.()
+    return () => { cancelled = true }
   }, [photo.file, photo.id, setPhotoDate])
 
   const getImageSrc = (): string => {

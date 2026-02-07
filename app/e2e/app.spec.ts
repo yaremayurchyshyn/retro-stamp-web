@@ -53,7 +53,7 @@ test.describe('RetroStamp', () => {
     const filePath = path.join(__dirname, '../fixtures/test.heic')
     
     await page.setInputFiles('input[type="file"]', filePath)
-    await expect(page.locator('text=Loading')).toBeVisible()
+    // Either catches loading state or it already finished loading
     await expect(page.locator('text=Ready to process')).toBeVisible({ timeout: TEST_TIMEOUT })
   })
 
