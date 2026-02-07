@@ -72,6 +72,15 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
+### v0.2.5 - EXIF Fallback Fix
+**Status**: Released  
+**Date**: 2026-02-07
+
+- [x] Use file date as fallback when no EXIF date (ISSUE-003)
+- [x] Add HEIC e2e test coverage
+
+---
+
 ### v0.3.0 - Per-photo Controls
 **Status**: Planned
 

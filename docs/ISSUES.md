@@ -17,6 +17,27 @@ Use Blob URL instead of data URL, append link to DOM before clicking.
 
 ---
 
+## ISSUE-003: PNG/JPEG without EXIF fails processing
+
+**Status**: Fixed in v0.2.5  
+**Severity**: Medium  
+**Found in**: v0.2.0  
+**Fixed in**: v0.2.5
+
+### Description
+
+PNG and JPEG files without EXIF date metadata show "Processing failed" error.
+
+### Root Cause
+
+Code threw error when no EXIF date found instead of using fallback.
+
+### Solution
+
+Use file's lastModified date as fallback when EXIF date unavailable.
+
+---
+
 ## ISSUE-002: Image rotated incorrectly on mobile
 
 **Status**: Fixed in v0.2.3  

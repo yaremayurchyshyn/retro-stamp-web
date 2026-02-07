@@ -195,10 +195,11 @@ class ImageProcessor {
   }
 
   private async extractDateAndOrientation(file: File): Promise<{ dateStr: string; orientation: number }> {
+    let orientation = 1
     try {
       const exif = await exifr.parse(file, ['DateTimeOriginal', 'CreateDate', 'ModifyDate', 'Orientation'])
       const date = exif?.DateTimeOriginal || exif?.CreateDate || exif?.ModifyDate
-      const orientation = exif?.Orientation || 1
+      orientation = exif?.Orientation || 1
       
       console.log('EXIF extracted:', { date, orientation, fileName: file.name })
       
@@ -208,7 +209,8 @@ class ImageProcessor {
     } catch (e) {
       console.error('EXIF extraction failed:', e)
     }
-    throw new Error('No date found in photo metadata')
+    // Fallback to file's last modified date
+    return { dateStr: formatDate(new Date(file.lastModified)), orientation }
   }
 
   private async decodeHeic(file: File): Promise<{ rgba: Uint8Array; width: number; height: number }> {

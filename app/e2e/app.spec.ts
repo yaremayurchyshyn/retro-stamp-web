@@ -33,12 +33,20 @@ test.describe('RetroStamp', () => {
     await expect(downloadBtn).toBeVisible()
   })
 
-  test('shows error for file without EXIF date', async ({ page }) => {
+  test('processes PNG file using file date as fallback', async ({ page }) => {
     const filePath = path.join(__dirname, '../fixtures/test.png')
     
     await page.setInputFiles('input[type="file"]', filePath)
     await page.click('button:has-text("Process All")')
-    await expect(page.locator('text=❌')).toBeVisible({ timeout: TEST_TIMEOUT })
+    await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
+  })
+
+  test('processes HEIC file successfully', async ({ page }) => {
+    const filePath = path.join(__dirname, '../fixtures/test.heic')
+    
+    await page.setInputFiles('input[type="file"]', filePath)
+    await page.click('button:has-text("Process All")')
+    await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
   })
 
   test('shows version in footer', async ({ page }) => {
