@@ -17,6 +17,28 @@ Use Blob URL instead of data URL, append link to DOM before clicking.
 
 ---
 
+## ISSUE-004: Chrome mobile crashes with multiple HEIC uploads
+
+**Status**: Fixed in v0.5.1  
+**Severity**: Critical  
+**Found in**: v0.5.0  
+**Fixed in**: v0.5.1
+
+### Description
+
+Page crashes when uploading ~10 HEIC images on Chrome mobile.
+
+### Root Cause
+
+All HEIC thumbnails decoded in parallel, causing memory spike (~49MB per image for RGBA buffer).
+
+### Solution
+
+- Queue HEIC thumbnail decoding (one at a time)
+- Generate smaller thumbnails (200px max, quality 70%)
+
+---
+
 ## ISSUE-003: PNG/JPEG without EXIF fails processing
 
 **Status**: Fixed in v0.2.5  

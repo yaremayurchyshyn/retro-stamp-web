@@ -63,6 +63,15 @@ def rgba_to_jpeg(rgba_base64, width, height):
     img.save(buffer, format="JPEG", quality=85)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
+def rgba_to_thumbnail(rgba_base64, width, height, max_size=200):
+    rgba_bytes = base64.b64decode(rgba_base64)
+    img = Image.frombytes("RGBA", (width, height), rgba_bytes)
+    img = img.convert("RGB")
+    img.thumbnail((max_size, max_size))
+    buffer = io.BytesIO()
+    img.save(buffer, format="JPEG", quality=70)
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
 def add_timestamp(input_base64, date_str, orientation=1):
     image_bytes = base64.b64decode(input_base64)
     img = Image.open(io.BytesIO(image_bytes))
@@ -290,7 +299,37 @@ class ImageProcessor {
     return await this.pyodide.runPythonAsync('add_timestamp(input_data, date_str, orientation)')
   }
 
+  private thumbnailQueue: Array<() => Promise<void>> = []
+  private isProcessingThumbnail = false
+
+  private async processQueue(): Promise<void> {
+    if (this.isProcessingThumbnail || this.thumbnailQueue.length === 0) return
+    this.isProcessingThumbnail = true
+    
+    const task = this.thumbnailQueue.shift()
+    if (task) {
+      await task()
+    }
+    
+    this.isProcessingThumbnail = false
+    this.processQueue()
+  }
+
   async decodeHeicToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.thumbnailQueue.push(async () => {
+        try {
+          const result = await this.decodeHeicToBase64Internal(file)
+          resolve(result)
+        } catch (e) {
+          reject(e)
+        }
+      })
+      this.processQueue()
+    })
+  }
+
+  private async decodeHeicToBase64Internal(file: File): Promise<string> {
     if (!this.ready || !this.pyodide) {
       throw new Error('Processor not initialized')
     }
@@ -308,7 +347,7 @@ class ImageProcessor {
     this.pyodide.globals.set('img_height', height)
 
     return await this.pyodide.runPythonAsync(
-      'rgba_to_jpeg(rgba_data, img_width, img_height)'
+      'rgba_to_thumbnail(rgba_data, img_width, img_height)'
     )
   }
 }
