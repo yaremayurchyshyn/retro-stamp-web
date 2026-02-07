@@ -122,28 +122,40 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.7.0 - Per-photo Controls
+### v0.7.0 - PWA Support
+**Status**: In Progress
+
+Progressive Web App support for installable experience.
+
+- [ ] App icons (favicon, apple-touch-icon, PWA icons)
+- [ ] Web manifest with RetroStamp branding
+- [ ] Service worker for offline caching
+- [ ] Installable on mobile home screen
+
+---
+
+### v0.8.0 - Per-photo Controls
 **Status**: Planned
 
 - [ ] Process button per photo
 
 ---
 
-### v0.8.0 - ZIP Download
+### v0.9.0 - ZIP Download
 **Status**: Planned
 
 - [ ] Download all as ZIP file
 
 ---
 
-### v0.9.0 - Preview
+### v0.10.0 - Preview
 **Status**: Planned
 
 - [ ] Before/after comparison view
 
 ---
 
-### v0.10.0 - Status Pipeline UI
+### v0.11.0 - Status Pipeline UI
 **Status**: Planned  
 **Priority**: Low
 
