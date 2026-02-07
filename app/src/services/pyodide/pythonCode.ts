@@ -63,7 +63,7 @@ def add_timestamp(input_base64, date_str, orientation=1):
     result = result.convert("RGB")
     
     buffer = io.BytesIO()
-    result.save(buffer, format="JPEG", quality=95)
+    result.save(buffer, format="JPEG", quality=85)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
 def add_timestamp_from_rgba(rgba_base64, width, height, date_str, orientation=1):
@@ -99,6 +99,6 @@ def add_timestamp_from_rgba(rgba_base64, width, height, date_str, orientation=1)
     result = result.convert("RGB")
     
     buffer = io.BytesIO()
-    result.save(buffer, format="JPEG", quality=95)
+    result.save(buffer, format="JPEG", quality=85)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 `
