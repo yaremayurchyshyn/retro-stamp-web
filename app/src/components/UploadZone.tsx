@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import type { DragEvent, ChangeEvent } from 'react'
 import { useAppStore } from '../store/useAppStore'
+import { useLocale } from '../store/useLocale'
 import { SUPPORTED_FORMATS } from '../constants'
 import styles from './UploadZone.module.css'
 
@@ -8,6 +9,7 @@ export function UploadZone() {
   const [isDragOver, setIsDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const addPhotos = useAppStore((s) => s.addPhotos)
+  const t = useLocale((s) => s.t)
 
   const filterValidFiles = (files: FileList | null): File[] => {
     if (!files) return []
@@ -52,8 +54,8 @@ export function UploadZone() {
         className={styles.hiddenInput}
       />
       <div className={styles.icon}>📷</div>
-      <p className={styles.text}>Drop photos here or click to select</p>
-      <p className={styles.hint}>{SUPPORTED_FORMATS.label}</p>
+      <p className={styles.text}>{t.uploadZone}</p>
+      <p className={styles.hint}>{t.uploadHint}</p>
     </div>
   )
 }

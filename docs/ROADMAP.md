@@ -93,7 +93,18 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.4.0 - Per-photo Controls
+### v0.4.0 - Internationalization
+**Status**: Released  
+**Date**: 2026-02-07
+
+- [x] i18n setup with English and Ukrainian
+- [x] Auto-detect browser language (uk/ru → Ukrainian)
+- [x] Language toggle in header
+- [x] Persist language choice to localStorage
+
+---
+
+### v0.5.0 - Per-photo Controls
 **Status**: Planned
 
 - [ ] Process button per photo
@@ -101,33 +112,14 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.4.0 - Per-photo Controls
-**Status**: Planned
-
-- [ ] Process button per photo
-- [ ] Remove photo from list
-
----
-
-### v0.5.0 - Internationalization
-**Status**: Planned
-
-- [ ] i18n setup
-- [ ] English language
-- [ ] Ukrainian language
-- [ ] Auto-detect browser language
-- [ ] Ukrainian for Russian locale
-
----
-
-### v0.5.0 - ZIP Download
+### v0.6.0 - ZIP Download
 **Status**: Planned
 
 - [ ] Download all as ZIP file
 
 ---
 
-### v0.6.0 - Preview
+### v0.7.0 - Preview
 **Status**: Planned
 
 - [ ] Before/after comparison view

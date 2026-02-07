@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { useAppStore } from '../store/useAppStore'
+import { useLocale } from '../store/useLocale'
 import styles from './DownloadAllButton.module.css'
 
 const DOWNLOAD_DELAY_MS = 150
@@ -8,6 +9,7 @@ export function DownloadAllButton() {
   const photos = useAppStore((s) => s.photos)
   const linksRef = useRef<HTMLDivElement>(null)
   const donePhotos = photos.filter((p) => p.status === 'done' && p.result)
+  const t = useLocale((s) => s.t)
 
   const handleDownloadAll = async () => {
     if (!linksRef.current) return
@@ -24,7 +26,7 @@ export function DownloadAllButton() {
   return (
     <div className={styles.container}>
       <button onClick={handleDownloadAll} className={styles.button}>
-        Download All ({donePhotos.length})
+        {t.downloadAll} ({donePhotos.length})
       </button>
       <div ref={linksRef} className={styles.hiddenLinks}>
         {donePhotos.map((photo) => (

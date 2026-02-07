@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { PhotoItem as PhotoItemType } from '../store/useAppStore'
 import { useAppStore } from '../store/useAppStore'
+import { useLocale } from '../store/useLocale'
 import { imageProcessor } from '../services/imageProcessor'
 import styles from './PhotoItem.module.css'
 
@@ -8,19 +9,13 @@ interface PhotoItemProps {
   photo: PhotoItemType
 }
 
-const STATUS_LABELS = {
-  pending: 'Ready to process',
-  processing: '⏳ Processing...',
-  done: '✅ Done',
-  error: '❌ Error',
-} as const
-
 export function PhotoItem({ photo }: PhotoItemProps) {
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [showPreview, setShowPreview] = useState(false)
   const setPhotoDate = useAppStore((s) => s.setPhotoDate)
   const setPhotoStatus = useAppStore((s) => s.setPhotoStatus)
+  const t = useLocale((s) => s.t)
 
   useEffect(() => {
     let revoke: (() => void) | null = null
@@ -59,11 +54,17 @@ export function PhotoItem({ photo }: PhotoItemProps) {
   }
 
   const getStatusLabel = (): string => {
-    if (isLoading) return '⏳ Loading...'
+    if (isLoading) return t.loading
     if (photo.status === 'error' && photo.error) {
-      return `❌ ${photo.error}`
+      return `${t.error}: ${photo.error}`
     }
-    return STATUS_LABELS[photo.status]
+    const labels = {
+      pending: t.readyToProcess,
+      processing: t.processing,
+      done: t.done,
+      error: t.error,
+    }
+    return labels[photo.status]
   }
 
   const getDownloadFilename = (): string => {
@@ -147,7 +148,7 @@ export function PhotoItem({ photo }: PhotoItemProps) {
 
         {photo.status === 'done' && photo.result && (
           <button onClick={handleDownload} className={styles.downloadBtn}>
-            Download
+            {t.download}
           </button>
         )}
       </div>

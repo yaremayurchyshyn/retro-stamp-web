@@ -1,4 +1,5 @@
 import { useAppStore } from '../store/useAppStore'
+import { useLocale } from '../store/useLocale'
 import { imageProcessor } from '../services/imageProcessor'
 import styles from './ProcessButton.module.css'
 
@@ -7,6 +8,7 @@ export function ProcessButton() {
   const processingIndex = useAppStore((s) => s.processingIndex)
   const setPhotoStatus = useAppStore((s) => s.setPhotoStatus)
   const setProcessingIndex = useAppStore((s) => s.setProcessingIndex)
+  const t = useLocale((s) => s.t)
 
   const pendingPhotos = photos.filter((p) => p.status === 'pending')
   const isProcessing = processingIndex >= 0
@@ -31,9 +33,9 @@ export function ProcessButton() {
   }
 
   const getButtonText = (): string => {
-    if (!isProcessing) return `Stamp All (${pendingPhotos.length})`
+    if (!isProcessing) return `${t.stampAll} (${pendingPhotos.length})`
     const doneCount = photos.filter((p) => p.status === 'done').length
-    return `Stamping ${doneCount + 1}/${photos.length}...`
+    return `${t.stamping} ${doneCount + 1}/${photos.length}...`
   }
 
   if (photos.length === 0) return null
