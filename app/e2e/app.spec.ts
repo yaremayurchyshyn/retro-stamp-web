@@ -75,8 +75,12 @@ test.describe('RetroStamp', () => {
     await page.fill('input[type="date"]', '2020-01-15')
     await expect(page.locator('text=Ready to process')).toBeVisible()
     
+    // Wait for button to be enabled (worker ready)
+    const stampButton = page.locator('button:has-text("Stamp All")')
+    await expect(stampButton).toBeEnabled({ timeout: TEST_TIMEOUT })
+    
     // Reprocess
-    await page.click('button:has-text("Stamp All")')
+    await stampButton.click()
     await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
   })
 

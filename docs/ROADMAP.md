@@ -129,17 +129,40 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.7.0 - ZIP Download
+### v0.8.0 - ZIP Download
 **Status**: Planned
 
 - [ ] Download all as ZIP file
 
 ---
 
-### v0.8.0 - Preview
+### v0.9.0 - Preview
 **Status**: Planned
 
 - [ ] Before/after comparison view
+
+---
+
+### v0.10.0 - Status Pipeline UI
+**Status**: Planned  
+**Priority**: Low
+
+Transparent status display showing application state at all times.
+
+**Concept:**
+- Status box showing all phases (grayed out) with current phase highlighted
+- Phases: Initializing → Ready → Uploading → Processing → Done
+- Sub-phases visible (e.g., "Processing 2/5")
+- Non-technical language (e.g., "Loading dependencies" not "Loading HEIC decoder")
+- Button states derived from status (no separate disabled logic)
+
+**Phases:**
+- `initializing` - Loading dependencies (keep full-screen loader)
+- `ready` - Waiting for photos
+- `uploading` - Reading photos (with count)
+- `processing` - Adding stamps (with progress)
+- `resetting` - Freeing memory
+- `done` - All complete
 
 ---
 

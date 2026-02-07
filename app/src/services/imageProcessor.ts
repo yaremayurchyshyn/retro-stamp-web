@@ -1,7 +1,7 @@
 import type { ImageStrategy } from './strategies/types'
 import { JpegPngStrategy } from './strategies/JpegPngStrategy'
 import { HeicStrategy } from './strategies/HeicStrategy'
-import { pythonRunner } from './pyodide/PythonRunner'
+import { pythonWorker } from './pyodide/PythonWorker'
 
 class ImageProcessor {
   private strategies: ImageStrategy[] = []
@@ -15,12 +15,12 @@ class ImageProcessor {
 
   async init(onProgress: (phase: string) => void): Promise<void> {
     await this.heicStrategy.init(onProgress)
-    await pythonRunner.init(onProgress)
+    await pythonWorker.init(onProgress)
     this.ready = true
   }
 
   isReady(): boolean {
-    return this.ready && pythonRunner.isReady()
+    return this.ready && pythonWorker.isReady()
   }
 
   private getStrategy(file: File): ImageStrategy {
@@ -47,6 +47,10 @@ class ImageProcessor {
     const strategy = this.getStrategy(file)
     const dateStr = customDateStr || (await strategy.extractDate(file))
     return strategy.process(file, dateStr)
+  }
+
+  async resetWorker(onProgress: (phase: string) => void): Promise<void> {
+    await pythonWorker.restart(onProgress)
   }
 }
 

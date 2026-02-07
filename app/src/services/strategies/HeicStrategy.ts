@@ -1,6 +1,6 @@
 import type { ImageStrategy, LibHeif } from './types'
 import { extractExifDate, uint8ArrayToBase64 } from '../utils/imageUtils'
-import { pythonRunner } from '../pyodide/PythonRunner'
+import { pythonWorker } from '../pyodide/PythonWorker'
 import { LIBHEIF_URL, BYTES_PER_PIXEL } from '../constants'
 
 export class HeicStrategy implements ImageStrategy {
@@ -46,10 +46,10 @@ export class HeicStrategy implements ImageStrategy {
 
     try {
       const { rgba, width, height } = await this.decodeHeic(file)
-      pythonRunner.setGlobal('rgba_data', uint8ArrayToBase64(rgba))
-      pythonRunner.setGlobal('img_width', width)
-      pythonRunner.setGlobal('img_height', height)
-      const base64 = await pythonRunner.run('rgba_to_thumbnail(rgba_data, img_width, img_height)')
+      const base64 = await pythonWorker.run(
+        'rgba_to_thumbnail(rgba_data, img_width, img_height)',
+        { rgba_data: uint8ArrayToBase64(rgba), img_width: width, img_height: height }
+      )
       resolve(`data:image/jpeg;base64,${base64}`)
     } catch (e) {
       reject(e instanceof Error ? e : new Error('Thumbnail generation failed'))
@@ -62,13 +62,16 @@ export class HeicStrategy implements ImageStrategy {
   async process(file: File, dateStr: string): Promise<string> {
     const { rgba, width, height } = await this.decodeHeic(file)
 
-    pythonRunner.setGlobal('rgba_data', uint8ArrayToBase64(rgba))
-    pythonRunner.setGlobal('img_width', width)
-    pythonRunner.setGlobal('img_height', height)
-    pythonRunner.setGlobal('date_str', dateStr)
-    pythonRunner.setGlobal('orientation', 1)
-
-    return pythonRunner.run('add_timestamp_from_rgba(rgba_data, img_width, img_height, date_str, orientation)')
+    return pythonWorker.run(
+      'add_timestamp_from_rgba(rgba_data, img_width, img_height, date_str, orientation)',
+      {
+        rgba_data: uint8ArrayToBase64(rgba),
+        img_width: width,
+        img_height: height,
+        date_str: dateStr,
+        orientation: 1,
+      }
+    )
   }
 
   private async decodeHeic(file: File): Promise<{ rgba: Uint8Array; width: number; height: number }> {

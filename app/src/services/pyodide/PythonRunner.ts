@@ -39,6 +39,20 @@ class PythonRunner {
     this.pyodide?.globals.set(name, value)
   }
 
+  async clearGlobals(): Promise<void> {
+    if (!this.pyodide) return
+    await this.pyodide.runPythonAsync(`
+rgba_data = None
+input_data = None
+img_width = None
+img_height = None
+date_str = None
+orientation = None
+import gc
+gc.collect()
+`)
+  }
+
   async run(code: string): Promise<string> {
     if (!this.pyodide) throw new Error('Pyodide not initialized')
     return this.pyodide.runPythonAsync(code)

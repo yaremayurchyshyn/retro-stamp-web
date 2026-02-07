@@ -19,23 +19,25 @@ Use Blob URL instead of data URL, append link to DOM before clicking.
 
 ## ISSUE-004: Chrome mobile crashes with multiple HEIC uploads
 
-**Status**: Fixed in v0.5.1  
+**Status**: Fixed in v0.6.2  
 **Severity**: Critical  
 **Found in**: v0.5.0  
-**Fixed in**: v0.5.1
+**Fixed in**: v0.6.2
 
 ### Description
 
-Page crashes when uploading ~10 HEIC images on Chrome mobile.
+Page crashes when uploading/processing multiple HEIC images on Chrome mobile.
 
 ### Root Cause
 
-All HEIC thumbnails decoded in parallel, causing memory spike (~49MB per image for RGBA buffer).
+Pyodide (Python WASM) memory not released after processing. Each HEIC processing used ~1GB that was never freed.
 
 ### Solution
 
-- Queue HEIC thumbnail decoding (one at a time)
-- Generate smaller thumbnails (200px max, quality 70%)
+- Move Pyodide to Web Worker
+- Terminate worker after batch processing
+- New worker created for next batch → fresh memory
+- Memory reduced from 1.1GB to 296MB (74% reduction)
 
 ---
 

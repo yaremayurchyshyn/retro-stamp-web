@@ -1,6 +1,6 @@
 import type { ImageStrategy } from './types'
 import { extractExifDate, getExifOrientation, uint8ArrayToBase64 } from '../utils/imageUtils'
-import { pythonRunner } from '../pyodide/PythonRunner'
+import { pythonWorker } from '../pyodide/PythonWorker'
 
 export class JpegPngStrategy implements ImageStrategy {
   canHandle(file: File): boolean {
@@ -21,11 +21,10 @@ export class JpegPngStrategy implements ImageStrategy {
     const orientation = await getExifOrientation(file)
     const base64Input = await this.fileToBase64(file)
 
-    pythonRunner.setGlobal('input_data', base64Input)
-    pythonRunner.setGlobal('date_str', dateStr)
-    pythonRunner.setGlobal('orientation', orientation)
-
-    return pythonRunner.run('add_timestamp(input_data, date_str, orientation)')
+    return pythonWorker.run(
+      'add_timestamp(input_data, date_str, orientation)',
+      { input_data: base64Input, date_str: dateStr, orientation }
+    )
   }
 
   private async fileToBase64(file: File): Promise<string> {

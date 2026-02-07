@@ -6,6 +6,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000/retro-stamp-web/',
     headless: true,
+    launchOptions: {
+      args: ['--enable-precise-memory-info', '--js-flags=--expose-gc'],
+    },
   },
   webServer: {
     command: 'npm run dev -- --port 3000',

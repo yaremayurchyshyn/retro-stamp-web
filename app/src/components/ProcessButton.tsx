@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useLocale } from '../store/useLocale'
 import { imageProcessor } from '../services/imageProcessor'
@@ -10,12 +11,15 @@ export function ProcessButton() {
   const setPhotoStatus = useAppStore((s) => s.setPhotoStatus)
   const setProcessingIndex = useAppStore((s) => s.setProcessingIndex)
   const t = useLocale((s) => s.t)
+  const [isResetting, setIsResetting] = useState(false)
 
   const pendingPhotos = photos.filter((p) => p.status === 'pending')
   const isProcessing = processingIndex >= 0
-  const isDisabled = pendingPhotos.length === 0 || isProcessing
+  const isDisabled = pendingPhotos.length === 0 || isProcessing || isResetting
 
   const handleProcess = async () => {
+    let processedCount = 0
+    
     for (let i = 0; i < photos.length; i++) {
       const photo = photos[i]
       if (photo.status !== 'pending') continue
@@ -28,12 +32,25 @@ export function ProcessButton() {
         setPhotoStatus(photo.id, 'done', result)
         const format = photo.file.name.split('.').pop()?.toLowerCase()
         analytics.track('photo_processed', { format })
+        processedCount++
+        
+        // Reset worker every 3 photos to prevent memory buildup
+        if (processedCount % 3 === 0) {
+          setIsResetting(true)
+          await imageProcessor.resetWorker(() => {})
+          setIsResetting(false)
+        }
       } catch (error) {
         setPhotoStatus(photo.id, 'error', undefined, 'Processing failed. Please try again.')
         analytics.trackError(error as Error, { context: 'process', file: photo.file.name })
       }
     }
     setProcessingIndex(-1)
+    
+    // Final reset to free remaining memory
+    setIsResetting(true)
+    await imageProcessor.resetWorker(() => {})
+    setIsResetting(false)
   }
 
   const getButtonText = (): string => {
