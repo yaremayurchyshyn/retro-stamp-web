@@ -23,9 +23,9 @@ test.describe('RetroStamp', () => {
     const filePath = path.join(__dirname, '../fixtures/test.jpg')
     
     await page.setInputFiles('input[type="file"]', filePath)
-    await expect(page.locator('text=Waiting...')).toBeVisible()
+    await expect(page.locator('text=Ready to process')).toBeVisible()
     
-    await page.click('button:has-text("Process All")')
+    await page.click('button:has-text("Stamp All")')
     await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
     
     // Verify download button exists
@@ -37,7 +37,7 @@ test.describe('RetroStamp', () => {
     const filePath = path.join(__dirname, '../fixtures/test.png')
     
     await page.setInputFiles('input[type="file"]', filePath)
-    await page.click('button:has-text("Process All")')
+    await page.click('button:has-text("Stamp All")')
     await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
   })
 
@@ -45,8 +45,56 @@ test.describe('RetroStamp', () => {
     const filePath = path.join(__dirname, '../fixtures/test.heic')
     
     await page.setInputFiles('input[type="file"]', filePath)
-    await page.click('button:has-text("Process All")')
+    await page.click('button:has-text("Stamp All")')
     await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
+  })
+
+  test('shows loading state for HEIC file', async ({ page }) => {
+    const filePath = path.join(__dirname, '../fixtures/test.heic')
+    
+    await page.setInputFiles('input[type="file"]', filePath)
+    await expect(page.locator('text=Loading')).toBeVisible()
+    await expect(page.locator('text=Ready to process')).toBeVisible({ timeout: TEST_TIMEOUT })
+  })
+
+  test('shows date picker after upload', async ({ page }) => {
+    const filePath = path.join(__dirname, '../fixtures/test.jpg')
+    
+    await page.setInputFiles('input[type="file"]', filePath)
+    await expect(page.locator('input[type="date"]')).toBeVisible()
+  })
+
+  test('allows changing date and reprocessing', async ({ page }) => {
+    const filePath = path.join(__dirname, '../fixtures/test.jpg')
+    
+    await page.setInputFiles('input[type="file"]', filePath)
+    await page.click('button:has-text("Stamp All")')
+    await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
+    
+    // Change date
+    await page.fill('input[type="date"]', '2020-01-15')
+    await expect(page.locator('text=Ready to process')).toBeVisible()
+    
+    // Reprocess
+    await page.click('button:has-text("Stamp All")')
+    await expect(page.locator('text=Done')).toBeVisible({ timeout: TEST_TIMEOUT })
+  })
+
+  test('opens preview modal on thumbnail click', async ({ page }) => {
+    const filePath = path.join(__dirname, '../fixtures/test.jpg')
+    
+    await page.setInputFiles('input[type="file"]', filePath)
+    await expect(page.locator('input[type="date"]')).toBeVisible()
+    
+    // Click thumbnail
+    await page.click('img[alt="test.jpg"]')
+    
+    // Verify overlay is visible
+    await expect(page.locator('div[class*="overlay"]')).toBeVisible()
+    
+    // Close by clicking
+    await page.click('div[class*="overlay"]')
+    await expect(page.locator('div[class*="overlay"]')).not.toBeVisible()
   })
 
   test('shows version in footer', async ({ page }) => {

@@ -21,7 +21,7 @@ export function ProcessButton() {
       setPhotoStatus(photo.id, 'processing')
 
       try {
-        const result = await imageProcessor.processImage(photo.file)
+        const result = await imageProcessor.processImage(photo.file, photo.dateStr)
         setPhotoStatus(photo.id, 'done', result)
       } catch {
         setPhotoStatus(photo.id, 'error', undefined, 'Processing failed. Please try again.')
@@ -31,9 +31,9 @@ export function ProcessButton() {
   }
 
   const getButtonText = (): string => {
-    if (!isProcessing) return `Process All (${pendingPhotos.length})`
+    if (!isProcessing) return `Stamp All (${pendingPhotos.length})`
     const doneCount = photos.filter((p) => p.status === 'done').length
-    return `Processing ${doneCount + 1}/${photos.length}...`
+    return `Stamping ${doneCount + 1}/${photos.length}...`
   }
 
   if (photos.length === 0) return null

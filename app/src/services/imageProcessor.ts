@@ -213,6 +213,11 @@ class ImageProcessor {
     return { dateStr: formatDate(new Date(file.lastModified)), orientation }
   }
 
+  async extractDate(file: File): Promise<string> {
+    const { dateStr } = await this.extractDateAndOrientation(file)
+    return dateStr
+  }
+
   private async decodeHeic(file: File): Promise<{ rgba: Uint8Array; width: number; height: number }> {
     if (!this.libheif) throw new Error('libheif not initialized')
     
@@ -242,12 +247,13 @@ class ImageProcessor {
     return { rgba, width, height }
   }
 
-  async processImage(file: File): Promise<string> {
+  async processImage(file: File, customDateStr?: string): Promise<string> {
     if (!this.ready || !this.pyodide) {
       throw new Error('Processor not initialized')
     }
 
-    const { dateStr, orientation } = await this.extractDateAndOrientation(file)
+    const { dateStr: extractedDate, orientation } = await this.extractDateAndOrientation(file)
+    const dateStr = customDateStr || extractedDate
 
     if (this.isHeic(file)) {
       const { rgba, width, height } = await this.decodeHeic(file)

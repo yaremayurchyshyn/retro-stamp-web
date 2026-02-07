@@ -6,6 +6,7 @@ export interface PhotoItem {
   status: 'pending' | 'processing' | 'done' | 'error'
   result?: string
   error?: string
+  dateStr?: string
 }
 
 interface AppState {
@@ -17,6 +18,7 @@ interface AppState {
   addPhotos: (files: File[]) => void
   removePhoto: (id: string) => void
   setLoading: (isLoading: boolean, phase?: string) => void
+  setPhotoDate: (id: string, dateStr: string) => void
   setPhotoStatus: (id: string, status: PhotoItem['status'], result?: string, error?: string) => void
   setProcessingIndex: (index: number) => void
   reset: () => void
@@ -47,6 +49,12 @@ export const useAppStore = create<AppState>((set) => ({
     isLoading,
     loadingPhase: phase ?? '',
   }),
+
+  setPhotoDate: (id, dateStr) => set((state) => ({
+    photos: state.photos.map((p) =>
+      p.id === id ? { ...p, dateStr } : p
+    ),
+  })),
 
   setPhotoStatus: (id, status, result, error) => set((state) => ({
     photos: state.photos.map((p) =>

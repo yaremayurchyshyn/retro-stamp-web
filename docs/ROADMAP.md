@@ -81,7 +81,19 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.3.0 - Per-photo Controls
+### v0.3.0 - Editable Date & Preview
+**Status**: Released  
+**Date**: 2026-02-07
+
+- [x] Show date picker for each photo (editable before processing)
+- [x] Preview modal on thumbnail click
+- [x] Loading state for HEIC files
+- [x] Reprocess after date change
+- [x] Rename button to "Stamp All"
+
+---
+
+### v0.4.0 - Per-photo Controls
 **Status**: Planned
 
 - [ ] Process button per photo
@@ -89,7 +101,15 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.4.0 - Internationalization
+### v0.4.0 - Per-photo Controls
+**Status**: Planned
+
+- [ ] Process button per photo
+- [ ] Remove photo from list
+
+---
+
+### v0.5.0 - Internationalization
 **Status**: Planned
 
 - [ ] i18n setup

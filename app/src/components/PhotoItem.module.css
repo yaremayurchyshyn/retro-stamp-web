@@ -13,6 +13,28 @@
   height: 60px;
   object-fit: cover;
   border-radius: 4px;
+  cursor: pointer;
+}
+
+.thumbnail:hover {
+  opacity: 0.8;
+}
+
+.thumbnailWrapper {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.thumbnailPlaceholder {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 20px;
 }
 
 .info {
@@ -26,6 +48,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.dateInput {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
 }
 
 .status {
@@ -48,4 +84,24 @@
 
 .downloadBtn:hover {
   background: #e8912d;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.previewImage {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
 }
