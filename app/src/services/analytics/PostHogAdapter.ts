@@ -2,7 +2,7 @@ import posthog from 'posthog-js'
 import type { AnalyticsProvider, EventName, EventProperties } from './types'
 
 const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY as string
-const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST as string || 'https://app.posthog.com'
+const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST as string || 'https://eu.i.posthog.com'
 
 class PostHogAdapter implements AnalyticsProvider {
   private initialized = false
