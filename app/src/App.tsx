@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useAppStore } from './store/useAppStore'
 import { useLocale } from './store/useLocale'
 import { imageProcessor } from './services/imageProcessor'
+import { analytics } from './services/analytics'
 import { PrivacyBanner } from './components/PrivacyBanner'
 import { LoadingScreen } from './components/LoadingScreen'
 import { UploadZone } from './components/UploadZone'
@@ -19,11 +20,14 @@ function App() {
   const t = useLocale((s) => s.t)
 
   useEffect(() => {
+    analytics.init()
+    
     const init = async () => {
       try {
         await imageProcessor.init((phase) => setLoading(true, phase))
         setLoading(false)
-      } catch {
+      } catch (error) {
+        analytics.trackError(error as Error, { context: 'init' })
         setLoading(false, 'Failed to load. Please refresh.')
       }
     }

@@ -1,6 +1,7 @@
 import { useAppStore } from '../store/useAppStore'
 import { useLocale } from '../store/useLocale'
 import { imageProcessor } from '../services/imageProcessor'
+import { analytics } from '../services/analytics'
 import styles from './ProcessButton.module.css'
 
 export function ProcessButton() {
@@ -25,8 +26,11 @@ export function ProcessButton() {
       try {
         const result = await imageProcessor.processImage(photo.file, photo.dateStr)
         setPhotoStatus(photo.id, 'done', result)
-      } catch {
+        const format = photo.file.name.split('.').pop()?.toLowerCase()
+        analytics.track('photo_processed', { format })
+      } catch (error) {
         setPhotoStatus(photo.id, 'error', undefined, 'Processing failed. Please try again.')
+        analytics.trackError(error as Error, { context: 'process', file: photo.file.name })
       }
     }
     setProcessingIndex(-1)

@@ -112,7 +112,17 @@ Space for critical bug fixes to v0.1.0.
 
 ---
 
-### v0.6.0 - Per-photo Controls
+### v0.6.0 - Analytics
+**Status**: Released  
+**Date**: 2026-02-07
+
+- [x] PostHog analytics integration
+- [x] Track uploads, processing, downloads, errors
+- [x] Analytics abstraction layer for easy provider swap
+
+---
+
+### v0.7.0 - Per-photo Controls
 **Status**: Planned
 
 - [ ] Process button per photo

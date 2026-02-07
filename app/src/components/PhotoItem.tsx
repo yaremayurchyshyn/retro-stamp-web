@@ -3,6 +3,7 @@ import type { PhotoItem as PhotoItemType } from '../store/useAppStore'
 import { useAppStore } from '../store/useAppStore'
 import { useLocale } from '../store/useLocale'
 import { imageProcessor } from '../services/imageProcessor'
+import { analytics } from '../services/analytics'
 import styles from './PhotoItem.module.css'
 
 interface PhotoItemProps {
@@ -85,6 +86,12 @@ export function PhotoItem({ photo }: PhotoItemProps) {
     document.body.removeChild(link)
     
     setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
+    analytics.track('photo_downloaded')
+  }
+
+  const handleRemove = () => {
+    removePhoto(photo.id)
+    analytics.track('photo_removed')
   }
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +154,7 @@ export function PhotoItem({ photo }: PhotoItemProps) {
         )}
 
         <button
-          onClick={() => removePhoto(photo.id)}
+          onClick={handleRemove}
           className={styles.removeBtn}
           disabled={photo.status === 'processing'}
         >

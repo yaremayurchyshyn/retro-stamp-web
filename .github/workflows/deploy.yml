@@ -41,6 +41,8 @@ jobs:
       - name: Build
         working-directory: app
         run: npm run build
+        env:
+          VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

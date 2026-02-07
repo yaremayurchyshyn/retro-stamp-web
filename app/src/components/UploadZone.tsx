@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import type { DragEvent, ChangeEvent } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useLocale } from '../store/useLocale'
+import { analytics } from '../services/analytics'
 import { SUPPORTED_FORMATS } from '../constants'
 import styles from './UploadZone.module.css'
 
@@ -23,16 +24,29 @@ export function UploadZone() {
 
   const handleDragLeave = () => setIsDragOver(false)
 
+  const trackUpload = (files: File[]) => {
+    files.forEach((file) => {
+      const format = file.name.split('.').pop()?.toLowerCase()
+      analytics.track('photo_uploaded', { format })
+    })
+  }
+
   const handleDrop = (e: DragEvent) => {
     e.preventDefault()
     setIsDragOver(false)
     const validFiles = filterValidFiles(e.dataTransfer.files)
-    if (validFiles.length) addPhotos(validFiles)
+    if (validFiles.length) {
+      addPhotos(validFiles)
+      trackUpload(validFiles)
+    }
   }
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const validFiles = filterValidFiles(e.target.files)
-    if (validFiles.length) addPhotos(validFiles)
+    if (validFiles.length) {
+      addPhotos(validFiles)
+      trackUpload(validFiles)
+    }
   }
 
   const openFilePicker = () => inputRef.current?.click()
