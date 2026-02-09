@@ -109,6 +109,31 @@ Use `window.open()` with blob URL or trigger download via `<a>` element that use
 
 ---
 
+## ISSUE-006: HEIC orientation not applied on mobile Chrome
+
+**Status**: Fixed in v0.7.2  
+**Severity**: Medium  
+**Found in**: v0.7.0  
+**Fixed in**: v0.7.2
+
+### Description
+
+Some HEIC images (e.g. IMG_6178.HEIC with EXIF orientation 6) appear rotated 90° left after stamping on iPhone Chrome. Preview thumbnail looks correct, but the processed result is rotated. Does not reproduce on desktop.
+
+### Root Cause
+
+libheif-js applies EXIF orientation inconsistently across platforms. On desktop it auto-applies rotation during decode; on mobile Chrome it sometimes does not. The code hardcoded `orientation: 1` assuming libheif always handles it.
+
+### Solution
+
+Read EXIF orientation from the file, then detect whether libheif already applied it by comparing decoded dimensions. For orientations 5-8 (which swap width/height), if the decoded image dimensions don't reflect the expected rotation, pass the real orientation to Python for manual correction.
+
+### Affected Files
+
+- `src/services/strategies/HeicStrategy.ts`
+
+---
+
 ## ISSUE-005: Cannot re-upload same file after deletion
 
 **Status**: Fixed in v0.7.1  

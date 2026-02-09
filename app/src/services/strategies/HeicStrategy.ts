@@ -1,5 +1,5 @@
 import type { ImageStrategy, LibHeif } from './types'
-import { extractExifDate, uint8ArrayToBase64 } from '../utils/imageUtils'
+import { extractExifDate, getExifOrientation, uint8ArrayToBase64 } from '../utils/imageUtils'
 import { pythonWorker } from '../pyodide/PythonWorker'
 import { LIBHEIF_URL, BYTES_PER_PIXEL } from '../constants'
 
@@ -61,6 +61,13 @@ export class HeicStrategy implements ImageStrategy {
 
   async process(file: File, dateStr: string): Promise<string> {
     const { rgba, width, height } = await this.decodeHeic(file)
+    const exifOrientation = await getExifOrientation(file)
+
+    // Orientations 5-8 swap width/height. If libheif already applied rotation,
+    // decoded dimensions will be swapped vs raw sensor. If not, we must apply it.
+    const isRotated = exifOrientation >= 5
+    const libheifApplied = isRotated ? height > width : true
+    const orientation = libheifApplied ? 1 : exifOrientation
 
     return pythonWorker.run(
       'add_timestamp_from_rgba(rgba_data, img_width, img_height, date_str, orientation)',
@@ -69,7 +76,7 @@ export class HeicStrategy implements ImageStrategy {
         img_width: width,
         img_height: height,
         date_str: dateStr,
-        orientation: 1,
+        orientation,
       }
     )
   }

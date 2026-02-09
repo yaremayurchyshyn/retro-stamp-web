@@ -143,6 +143,14 @@ Progressive Web App support for installable experience.
 
 ---
 
+### v0.7.2 - HEIC Orientation Fix (Mobile)
+**Status**: Released  
+**Date**: 2026-02-09
+
+- [x] Fix HEIC image rotation on mobile Chrome (ISSUE-006)
+
+---
+
 ### v0.8.0 - Per-photo Controls
 **Status**: Planned
 
