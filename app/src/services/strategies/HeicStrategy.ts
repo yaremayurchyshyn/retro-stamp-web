@@ -63,8 +63,8 @@ export class HeicStrategy implements ImageStrategy {
     const { rgba, width, height } = await this.decodeHeic(file)
     const exifOrientation = await getExifOrientation(file)
 
-    // DEBUG: remove after testing
-    alert(`decoded: ${width}x${height}, exif orientation: ${exifOrientation}`)
+    // DEBUG: show on page title since alert may not work
+    document.title = `D:${width}x${height} O:${exifOrientation}`
 
     // Orientations 5-8 swap width/height. If libheif already applied rotation,
     // decoded dimensions will be swapped vs raw sensor. If not, we must apply it.
