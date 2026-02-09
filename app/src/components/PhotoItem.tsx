@@ -118,7 +118,7 @@ export function PhotoItem({ photo }: PhotoItemProps) {
     <>
       <div className={styles.item}>
         <div className={styles.thumbnailWrapper}>
-          {isLoading ? (
+          {isLoading || !getImageSrc() ? (
             <div className={styles.thumbnailPlaceholder}>⏳</div>
           ) : (
             <img
