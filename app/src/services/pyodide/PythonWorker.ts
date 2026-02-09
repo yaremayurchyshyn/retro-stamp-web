@@ -1,4 +1,4 @@
-const WORKER_TIMEOUT_MS = 60000
+const WORKER_TIMEOUT_MS = 120000
 
 interface PendingRequest {
   resolve: (result: string) => void
@@ -16,8 +16,6 @@ class PythonWorker {
     if (this.initPromise) return this.initPromise
 
     this.initPromise = new Promise((resolve, reject) => {
-      onProgress('Loading Python runtime...')
-      
       const worker = new Worker(
         new URL('./pyodide.worker.ts', import.meta.url),
         { type: 'module' }
@@ -34,7 +32,7 @@ class PythonWorker {
         if (type === 'ready') {
           clearTimeout(timeout)
           this.ready = true
-          onProgress('Python runtime ready')
+          onProgress('Ready')
           resolve()
           return
         }

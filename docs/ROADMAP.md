@@ -123,14 +123,23 @@ Space for critical bug fixes to v0.1.0.
 ---
 
 ### v0.7.0 - PWA Support
-**Status**: In Progress
+**Status**: Released  
+**Date**: 2026-02-09
 
 Progressive Web App support for installable experience.
 
-- [ ] App icons (favicon, apple-touch-icon, PWA icons)
-- [ ] Web manifest with RetroStamp branding
-- [ ] Service worker for offline caching
-- [ ] Installable on mobile home screen
+- [x] App icons (favicon, apple-touch-icon, PWA icons)
+- [x] Web manifest with RetroStamp branding
+- [x] Service worker for offline caching
+- [x] Installable on mobile home screen
+
+---
+
+### v0.7.1 - Re-upload Fix
+**Status**: Released  
+**Date**: 2026-02-09
+
+- [x] Fix re-uploading same file after deletion (ISSUE-005)
 
 ---
 

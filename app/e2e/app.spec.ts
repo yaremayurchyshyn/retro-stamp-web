@@ -111,6 +111,19 @@ test.describe('RetroStamp', () => {
     await expect(page.locator('text=test.jpg')).not.toBeVisible()
   })
 
+  test('allows re-uploading same file after deletion', async ({ page }) => {
+    const filePath = path.join(__dirname, '../fixtures/test.jpg')
+
+    await page.setInputFiles('input[type="file"]', filePath)
+    await expect(page.locator('text=test.jpg')).toBeVisible()
+
+    await page.click('button:has-text("✕")')
+    await expect(page.locator('text=test.jpg')).not.toBeVisible()
+
+    await page.setInputFiles('input[type="file"]', filePath)
+    await expect(page.locator('text=test.jpg')).toBeVisible()
+  })
+
   test('shows version in footer', async ({ page }) => {
     await expect(page.locator('text=v0.')).toBeVisible()
   })

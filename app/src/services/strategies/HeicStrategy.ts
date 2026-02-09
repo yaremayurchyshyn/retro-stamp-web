@@ -92,7 +92,7 @@ export class HeicStrategy implements ImageStrategy {
     const rgba = await new Promise<Uint8Array>((resolve, reject) => {
       const buffer = new Uint8Array(width * height * BYTES_PER_PIXEL)
       image.display({ data: buffer, width, height }, (displayData) => {
-        displayData ? resolve(displayData.data) : reject(new Error('Failed to get image data'))
+        if (displayData) { resolve(displayData.data) } else { reject(new Error('Failed to get image data')) }
       })
     })
 

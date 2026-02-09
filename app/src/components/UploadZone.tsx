@@ -47,6 +47,7 @@ export function UploadZone() {
       addPhotos(validFiles)
       trackUpload(validFiles)
     }
+    e.target.value = ''
   }
 
   const openFilePicker = () => inputRef.current?.click()

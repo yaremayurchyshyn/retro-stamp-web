@@ -4,9 +4,7 @@ import { PYTHON_CODE } from './pythonCode'
 interface PyodideInterface {
   loadPackage: (name: string) => Promise<void>
   runPythonAsync: (code: string) => Promise<string>
-  globals: {
-    set: (name: string, value: unknown) => void
-  }
+  globals: { set: (name: string, value: unknown) => void }
 }
 
 let pyodide: PyodideInterface | null = null
@@ -40,15 +38,12 @@ self.onmessage = async (e: MessageEvent) => {
     }
 
     try {
-      // Set globals
       for (const [name, value] of Object.entries(globals || {})) {
         pyodide.globals.set(name, value)
       }
 
-      // Run code
       const result = await pyodide.runPythonAsync(code)
 
-      // Clear globals
       await pyodide.runPythonAsync(`
 rgba_data = None
 input_data = None

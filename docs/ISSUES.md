@@ -109,6 +109,31 @@ Use `window.open()` with blob URL or trigger download via `<a>` element that use
 
 ---
 
+## ISSUE-005: Cannot re-upload same file after deletion
+
+**Status**: Fixed in v0.7.1  
+**Severity**: Medium  
+**Found in**: v0.7.0  
+**Fixed in**: v0.7.1
+
+### Description
+
+When a user uploads a photo, deletes it, and tries to upload the same file again — nothing happens. The photo does not appear. Uploading a different file works fine.
+
+### Root Cause
+
+The HTML `<input type="file">` element doesn't fire `onChange` when the same file is selected again because the input's value hasn't changed.
+
+### Solution
+
+Reset the file input value (`e.target.value = ''`) after each file selection in `handleFileSelect`.
+
+### Affected Files
+
+- `src/components/UploadZone.tsx`
+
+---
+
 # Technical Debt
 
 ## TD-001: Python code as string literal
