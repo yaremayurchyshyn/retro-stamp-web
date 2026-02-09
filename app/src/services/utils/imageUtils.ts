@@ -28,10 +28,24 @@ export async function extractExifDate(file: File): Promise<string> {
   return formatDate(new Date(file.lastModified))
 }
 
+const ORIENTATION_MAP: Record<string, number> = {
+  'Horizontal (normal)': 1,
+  'Mirror horizontal': 2,
+  'Rotate 180': 3,
+  'Mirror vertical': 4,
+  'Mirror horizontal and rotate 270 CW': 5,
+  'Rotate 90 CW': 6,
+  'Mirror horizontal and rotate 90 CW': 7,
+  'Rotate 270 CW': 8,
+}
+
 export async function getExifOrientation(file: File): Promise<number> {
   try {
     const exif = await exifr.parse(file, ['Orientation'])
-    return exif?.Orientation || 1
+    const raw = exif?.Orientation
+    if (typeof raw === 'number') return raw
+    if (typeof raw === 'string') return ORIENTATION_MAP[raw] || 1
+    return 1
   } catch {
     return 1
   }

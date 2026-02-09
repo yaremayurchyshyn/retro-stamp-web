@@ -96,6 +96,7 @@ To deploy without creating a tag (e.g., hotfix):
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v0.7.5 | 2026-02-09 | Fix HEIC orientation parsing for mobile |
 | v0.7.2 | 2026-02-09 | Fix HEIC orientation on mobile Chrome |
 | v0.7.1 | 2026-02-09 | Fix re-uploading same file after deletion |
 | v0.7.0 | 2026-02-09 | PWA support |

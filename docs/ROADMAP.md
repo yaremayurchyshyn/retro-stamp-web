@@ -151,6 +151,15 @@ Progressive Web App support for installable experience.
 
 ---
 
+### v0.7.5 - HEIC Orientation Fix (Complete)
+**Status**: Released  
+**Date**: 2026-02-09
+
+- [x] Fix exifr returning string orientation for HEIC files (ISSUE-006)
+- [x] Add mobile e2e test for HEIC orientation
+
+---
+
 ### v0.8.0 - Per-photo Controls
 **Status**: Planned
 
